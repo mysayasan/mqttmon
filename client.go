@@ -170,7 +170,7 @@ func (c *Client) Connect() {
 	options.SetAutoReconnect(c.broker.AutoReconnect == 1)
 	options.SetKeepAlive(time.Duration(c.broker.KeepAlive) * time.Second)
 	options.SetPingTimeout(time.Duration(c.broker.PingTimeout) * time.Second)
-	options.SetConnectRetryInterval(time.Duration(c.broker.ConnectRetryInterval) * time.Second)
+	options.SetConnectRetryInterval(time.Duration(c.broker.ConnectRetryDelay) * time.Second)
 
 	// // Test Subscribe
 	// options.OnConnect = func(mc mqtt.Client) {
