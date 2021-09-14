@@ -19,12 +19,12 @@ type Broker struct {
 	AutoReconnect     int       `json:"autoreconnect" form:"autoreconnect" query:"autoreconnect"`
 	ConnectRetryDelay int       `json:"connectretrydelay" form:"connectretrydelay" query:"connectretrydelay"`
 	IsActive          int       `json:"isactive" form:"isactive" query:"isactive"`
-	CreatedUserName   string    `json:"createdusername" form:"createdusername" query:"createdusername"`
-	CreatedDateUnix   int64     `json:"createddateunix" form:"createddateunix" query:"createddateunix"`
-	CreatedDate       time.Time `json:"createddate" form:"createddate" query:"createddate"`
-	ModifiedUserName  string    `json:"modifiedusername" form:"modifiedusername" query:"modifiedusername"`
-	ModifiedDateUnix  int64     `json:"modifieddateunix" form:"modifieddateunix" query:"modifieddateunix"`
-	ModifiedDate      time.Time `json:"modifydate" form:"modifydate" query:"modifydate"`
+	CreatedBy         string    `json:"createdby" form:"createdby" query:"createdby"`
+	CreatedOn         int64     `json:"createdon" form:"createdon" query:"createdon"`
+	DateCreated       time.Time `json:"datecreated" form:"datecreated" query:"datecreated"`
+	UpdatedBy         string    `json:"updatedby" form:"updatedby" query:"updatedby"`
+	UpdatedOn         int64     `json:"updatedon" form:"updatedon" query:"updatedon"`
+	DateUpdated       time.Time `json:"dateupdated" form:"dateupdated" query:"dateupdated"`
 }
 
 // Publish Model
@@ -37,12 +37,12 @@ type Publish struct {
 	IsRetain           int         `json:"isretain" form:"isretain" query:"isretain"`
 	Payload            interface{} `json:"payload" form:"payload" query:"payload"`
 	IsActive           int         `json:"isactive" form:"isactive" query:"isactive"`
-	CreatedUserName    string      `json:"createdusername" form:"createdusername" query:"createdusername"`
-	CreatedDateUnix    int64       `json:"createddateunix" form:"createddateunix" query:"createddateunix"`
-	CreatedDate        time.Time   `json:"createddate" form:"createddate" query:"createddate"`
-	ModifiedUserName   string      `json:"modifiedusername" form:"modifiedusername" query:"modifiedusername"`
-	ModifiedDateUnix   int64       `json:"modifieddateunix" form:"modifieddateunix" query:"modifieddateunix"`
-	ModifiedDate       time.Time   `json:"modifydate" form:"modifydate" query:"modifydate"`
+	CreatedBy          string      `json:"createdby" form:"createdby" query:"createdby"`
+	CreatedOn          int64       `json:"createdon" form:"createdon" query:"createdon"`
+	DateCreated        time.Time   `json:"datecreated" form:"datecreated" query:"datecreated"`
+	UpdatedBy          string      `json:"updatedby" form:"updatedby" query:"updatedby"`
+	UpdatedOn          int64       `json:"updatedon" form:"updatedon" query:"updatedon"`
+	DateUpdated        time.Time   `json:"dateupdated" form:"dateupdated" query:"dateupdated"`
 }
 
 // Subscription Model
@@ -53,10 +53,10 @@ type Subscription struct {
 	Topic                   string    `json:"topic" form:"topic" query:"topic"`
 	QOS                     int       `json:"qos" form:"qos" query:"qos"`
 	IsActive                int       `json:"isactive" form:"isactive" query:"isactive"`
-	CreatedUserName         string    `json:"createdusername" form:"createdusername" query:"createdusername"`
-	CreatedDateUnix         int64     `json:"createddateunix" form:"createddateunix" query:"createddateunix"`
-	CreatedDate             time.Time `json:"createddate" form:"createddate" query:"createddate"`
-	ModifiedUserName        string    `json:"modifiedusername" form:"modifiedusername" query:"modifiedusername"`
-	ModifiedDateUnix        int64     `json:"modifieddateunix" form:"modifieddateunix" query:"modifieddateunix"`
-	ModifiedDate            time.Time `json:"modifydate" form:"modifydate" query:"modifydate"`
+	CreatedBy               string    `json:"createdby" form:"createdby" query:"createdby"`
+	CreatedOn               int64     `json:"createdon" form:"createdon" query:"createdon"`
+	DateCreated             time.Time `json:"datecreated" form:"datecreated" query:"datecreated"`
+	UpdatedBy               string    `json:"updatedby" form:"updatedby" query:"updatedby"`
+	UpdatedOn               int64     `json:"updatedon" form:"updatedon" query:"updatedon"`
+	DateUpdated             time.Time `json:"dateupdated" form:"dateupdated" query:"dateupdated"`
 }
