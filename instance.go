@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	hosthelper "github.com/mysayasan/hosthelper"
@@ -23,7 +24,7 @@ type instance struct {
 }
 
 // NewInstance create new MQTT instancelication
-// func NewSubscribe(hub *Hub, brokerUcase IBrokerUcase, subscriptionUcase ISubscriptionUcase, timeout time.Duration, logger *logrus.Logger, response chan interface{}) ISubscribeInstance {
+// func NewSubscribe(hub *Hub, brokerUcase IBrokerUcase, subscriptionUcase ISubscribeUcase, timeout time.Duration, logger *logrus.Logger, response chan interface{}) ISubscribeInstance {
 func NewInstance(hub *Hub, brokers []*Broker, timeout time.Duration, logger *logrus.Logger) IInstance {
 
 	hostName, _ := os.Hostname()
@@ -96,29 +97,29 @@ func (a *instance) runPublisher(publishChan chan []byte) {
 	for {
 		select {
 		case data := <-publishChan:
-			var publish Publish
-			err := json.Unmarshal(data, &publish)
+			var publication Publication
+			err := json.Unmarshal(data, &publication)
 			if err != nil {
 				a.logEntry.Error(err)
 				continue
 			}
 			// fmt.Printf("%v", publish)
-			a.Publish(publish)
+			a.Publish(publication)
 		default:
 			continue
 		}
 	}
 }
 
-func (a *instance) Publish(publish Publish) {
-	publishJSON, err := json.Marshal(publish)
+func (a *instance) Publish(publication Publication) {
+	publishJSON, err := json.Marshal(publication)
 	if err != nil {
 		a.logEntry.Error(err)
 		return
 	}
 	// Publish to mqtt client
 	for client := range a.hub.Clients {
-		if client.broker.BrokerID == publish.BrokerID {
+		if client.broker.BrokerID == publication.BrokerID {
 			// fmt.Println(publish)
 			client.Publish <- publishJSON
 		}
@@ -134,7 +135,7 @@ func (a *instance) Subscribe(subscription *Subscription, response chan []byte) {
 	// Subscribe to mqtt broker
 	for client := range a.hub.Clients {
 		if client.broker.BrokerID == subscription.BrokerID {
-			client.AddListener(subscription.SubscriptionID.String(), response)
+			client.AddListener(strconv.FormatInt(subscription.SubID, 10), response)
 			client.Subscribe <- subscriptionJSON
 		}
 	}

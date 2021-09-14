@@ -130,22 +130,22 @@ func (c *Client) run(client mqtt.Client) {
 				return
 			}
 
-			var publish Publish
+			var publication Publication
 
-			err := json.Unmarshal(data, &publish)
+			err := json.Unmarshal(data, &publication)
 			if err != nil {
 				c.logEntry.Error(err)
 				continue
 			}
 
-			messageJSON, err := json.Marshal(publish.Payload)
+			messageJSON, err := json.Marshal(publication.Payload)
 			if err != nil {
 				c.logEntry.Error(err)
 			}
 
 			// fmt.Println(publish)
 
-			if token := client.Publish(publish.Topic, byte(publish.QOS), publish.IsRetain == 1, messageJSON); token.Wait() && token.Error() != nil {
+			if token := client.Publish(publication.Topic, byte(publication.QOS), publication.IsRetain == 1, messageJSON); token.Wait() && token.Error() != nil {
 				c.logEntry.Error(token.Error())
 			}
 		case data, ok := <-c.Subscribe:
@@ -165,7 +165,7 @@ func (c *Client) run(client mqtt.Client) {
 			if token := client.Subscribe(subscription.Topic, byte(subscription.QOS), func(client mqtt.Client, message mqtt.Message) {
 				go func(message mqtt.Message) {
 					c.logEntry.Info(message)
-					c.emit(subscription.SubscriptionID.String(), message.Payload())
+					c.emit(strconv.FormatInt(subscription.SubID, 10), message.Payload())
 				}(message)
 			}); token.Wait() && token.Error() != nil {
 				c.logEntry.Error(token.Error())

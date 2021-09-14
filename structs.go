@@ -2,23 +2,21 @@ package mqttmon
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // Broker Model
 type Broker struct {
-	BrokerID          uuid.UUID `json:"brokerid" form:"brokerid" query:"brokerid"`
-	BrokerDescription string    `json:"brokerdescription" form:"brokerdescription" query:"brokerdescription"`
+	BrokerID          int       `json:"brokerid" form:"brokerid" query:"brokerid"`
+	BrokerDesc        string    `json:"brokerdesc" form:"brokerdesc" query:"brokerdesc"`
 	BrokerAddress     string    `json:"brokeraddress" form:"brokeraddress" query:"brokeraddress" validate:"required"`
 	ClientID          string    `json:"clientid" form:"clientid" query:"clientid"`
 	Username          string    `json:"username" form:"username" query:"username"`
 	Userpass          string    `json:"userpass" form:"userpass" query:"userpass"`
 	PingTimeout       int       `json:"pingtimeout" form:"pingtimeout" query:"pingtimeout"`
-	KeepAlive         int       `json:"keepalive" form:"keepalive" query:"keepalive"`
-	AutoReconnect     int       `json:"autoreconnect" form:"autoreconnect" query:"autoreconnect"`
+	KeepAlive         int16     `json:"keepalive" form:"keepalive" query:"keepalive"`
+	AutoReconnect     int16     `json:"autoreconnect" form:"autoreconnect" query:"autoreconnect"`
 	ConnectRetryDelay int       `json:"connectretrydelay" form:"connectretrydelay" query:"connectretrydelay"`
-	IsActive          int       `json:"isactive" form:"isactive" query:"isactive"`
+	IsActive          int16     `json:"isactive" form:"isactive" query:"isactive"`
 	CreatedBy         string    `json:"createdby" form:"createdby" query:"createdby"`
 	CreatedOn         int64     `json:"createdon" form:"createdon" query:"createdon"`
 	DateCreated       time.Time `json:"datecreated" form:"datecreated" query:"datecreated"`
@@ -27,36 +25,36 @@ type Broker struct {
 	DateUpdated       time.Time `json:"dateupdated" form:"dateupdated" query:"dateupdated"`
 }
 
-// Publish Model
-type Publish struct {
-	PublishID          uuid.UUID   `json:"publishid" form:"publishid" query:"publishid"`
-	PublishDescription string      `json:"publishdescription" form:"publishdescription" query:"publishdescription"`
-	BrokerID           uuid.UUID   `json:"brokerid" form:"brokerid" query:"brokerid" validate:"required"`
-	Topic              string      `json:"topic" form:"topic" query:"topic"`
-	QOS                int         `json:"qos" form:"qos" query:"qos"`
-	IsRetain           int         `json:"isretain" form:"isretain" query:"isretain"`
-	Payload            interface{} `json:"payload" form:"payload" query:"payload"`
-	IsActive           int         `json:"isactive" form:"isactive" query:"isactive"`
-	CreatedBy          string      `json:"createdby" form:"createdby" query:"createdby"`
-	CreatedOn          int64       `json:"createdon" form:"createdon" query:"createdon"`
-	DateCreated        time.Time   `json:"datecreated" form:"datecreated" query:"datecreated"`
-	UpdatedBy          string      `json:"updatedby" form:"updatedby" query:"updatedby"`
-	UpdatedOn          int64       `json:"updatedon" form:"updatedon" query:"updatedon"`
-	DateUpdated        time.Time   `json:"dateupdated" form:"dateupdated" query:"dateupdated"`
+// Publication Model
+type Publication struct {
+	PubID       int64       `json:"pubid" form:"pubid" query:"pubid"`
+	PubDesc     string      `json:"pubdesc" form:"pubdesc" query:"pubdesc"`
+	BrokerID    int         `json:"brokerid" form:"brokerid" query:"brokerid" validate:"required"`
+	Topic       string      `json:"topic" form:"topic" query:"topic"`
+	QOS         int16       `json:"qos" form:"qos" query:"qos"`
+	IsRetain    int16       `json:"isretain" form:"isretain" query:"isretain"`
+	Payload     interface{} `json:"payload" form:"payload" query:"payload"`
+	IsActive    int16       `json:"isactive" form:"isactive" query:"isactive"`
+	CreatedBy   string      `json:"createdby" form:"createdby" query:"createdby"`
+	CreatedOn   int64       `json:"createdon" form:"createdon" query:"createdon"`
+	DateCreated time.Time   `json:"datecreated" form:"datecreated" query:"datecreated"`
+	UpdatedBy   string      `json:"updatedby" form:"updatedby" query:"updatedby"`
+	UpdatedOn   int64       `json:"updatedon" form:"updatedon" query:"updatedon"`
+	DateUpdated time.Time   `json:"dateupdated" form:"dateupdated" query:"dateupdated"`
 }
 
 // Subscription Model
 type Subscription struct {
-	SubscriptionID          uuid.UUID `json:"subscriptionid" form:"subscriptionid" query:"subscriptionid"`
-	SubscriptionDescription string    `json:"subscriptiondescription" form:"subscriptiondescription" query:"subscriptiondescription"`
-	BrokerID                uuid.UUID `json:"brokerid" form:"brokerid" query:"brokerid" validate:"required"`
-	Topic                   string    `json:"topic" form:"topic" query:"topic"`
-	QOS                     int       `json:"qos" form:"qos" query:"qos"`
-	IsActive                int       `json:"isactive" form:"isactive" query:"isactive"`
-	CreatedBy               string    `json:"createdby" form:"createdby" query:"createdby"`
-	CreatedOn               int64     `json:"createdon" form:"createdon" query:"createdon"`
-	DateCreated             time.Time `json:"datecreated" form:"datecreated" query:"datecreated"`
-	UpdatedBy               string    `json:"updatedby" form:"updatedby" query:"updatedby"`
-	UpdatedOn               int64     `json:"updatedon" form:"updatedon" query:"updatedon"`
-	DateUpdated             time.Time `json:"dateupdated" form:"dateupdated" query:"dateupdated"`
+	SubID       int64     `json:"subid" form:"subid" query:"subid"`
+	SubDesc     string    `json:"subdesc" form:"subdesc" query:"subdesc"`
+	BrokerID    int       `json:"brokerid" form:"brokerid" query:"brokerid" validate:"required"`
+	Topic       string    `json:"topic" form:"topic" query:"topic"`
+	QOS         int16     `json:"qos" form:"qos" query:"qos"`
+	IsActive    int16     `json:"isactive" form:"isactive" query:"isactive"`
+	CreatedBy   string    `json:"createdby" form:"createdby" query:"createdby"`
+	CreatedOn   int64     `json:"createdon" form:"createdon" query:"createdon"`
+	DateCreated time.Time `json:"datecreated" form:"datecreated" query:"datecreated"`
+	UpdatedBy   string    `json:"updatedby" form:"updatedby" query:"updatedby"`
+	UpdatedOn   int64     `json:"updatedon" form:"updatedon" query:"updatedon"`
+	DateUpdated time.Time `json:"dateupdated" form:"dateupdated" query:"dateupdated"`
 }
