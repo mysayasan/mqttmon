@@ -13,13 +13,6 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-// // responseMessage standard modbus response format
-// type responseMessage struct {
-// 	TimeStamp int64  `json:"timestamp" form:"timestamp" query:"timestamp"`
-// 	Topic     string `json:"topic" form:"topic" query:"topic"`
-// 	Payload   []byte `json:"payload" form:"payload" query:"payload"`
-// }
-
 // Client is a middleman between the mqtt client connection and the hub.
 type Client struct {
 	// Broker Information
@@ -37,24 +30,14 @@ type Client struct {
 	// Close channel
 	Close chan bool
 
-	// listeners
-	// listeners map[string]chan []byte
+	// listener
 	listeners map[string][]chan []byte
-
-	// // Event listeners
-	// Event event.Event
-
-	// Message handlers
-	// messageHandler mqtt.MessageHandler
-	// messageHandler MessageHandler
 }
 
 // NewClient create new client
 func NewClient(
 	broker *Broker,
 	logEntry *logrus.Entry,
-	// messageHandler mqtt.MessageHandler,
-	// messageHandler MessageHandler,
 ) *Client {
 	return &Client{
 		broker:    broker,
@@ -62,56 +45,15 @@ func NewClient(
 		Publish:   make(chan []byte),
 		Subscribe: make(chan []byte),
 		Close:     make(chan bool),
-		// messageHandler: messageHandler,
 	}
 }
-
-// // AddListener add event listener
-// func (c *Client) AddListener(e string, ch chan []byte) {
-// 	if c.listeners == nil {
-// 		c.listeners = make(map[string]chan []byte)
-// 	}
-// 	if _, ok := c.listeners[e]; ok {
-// 		close(c.listeners[e])
-// 		c.listeners[e] = ch
-// 	} else {
-// 		c.listeners[e] = ch
-// 	}
-// }
-
-// // RemoveListener removes an event listener
-// func (c *Client) RemoveListener(e string, ch chan []byte) {
-// 	if _, ok := c.listeners[e]; ok {
-// 		delete(c.listeners, e)
-// 		close(c.listeners[e])
-// 	}
-// }
-
-// // Emit emits an event on the Dog struct instance
-// func (c *Client) emit(e string, response []byte) {
-// 	if _, ok := c.listeners[e]; ok {
-// 		c.listeners[e] <- response
-// 		// for _, handler := range c.listeners {
-// 		// 	go func(handler chan []byte) {
-// 		// 		handler <- response
-// 		// 	}(handler)
-// 		// }
-// 	}
-// }
 
 // AddListener add event listener
 func (c *Client) AddListener(e string, ch chan []byte) {
 	if c.listeners == nil {
 		c.listeners = make(map[string][]chan []byte)
 	}
-
 	c.listeners[e] = append(c.listeners[e], ch)
-
-	// if _, ok := c.listeners[e]; ok {
-	// 	c.listeners[e] = append(c.listeners[e], ch)
-	// } else {
-	// 	c.listeners[e] = []chan []byte{ch}
-	// }
 }
 
 // RemoveListener removes an event listener
@@ -137,16 +79,6 @@ func (c *Client) emit(e string, response []byte) {
 	}
 }
 
-// // onMessageReceived Print out message
-// func (c *Client) onMessageReceived(client mqtt.Client, message mqtt.Message) {
-// 	// messageJSON, err := json.Marshal(message.Payload())
-// 	// if err != nil {
-// 	// 	c.logEntry.Error(err)
-// 	// }
-// 	c.emit("test", message.Payload())
-// 	// fmt.Println(message.Payload())
-// }
-
 // Connect to  Broker
 // func (c *Client) Connect(wg *sync.WaitGroup) {
 func (c *Client) Connect() {
@@ -171,13 +103,6 @@ func (c *Client) Connect() {
 	options.SetKeepAlive(time.Duration(c.broker.KeepAlive) * time.Second)
 	options.SetPingTimeout(time.Duration(c.broker.PingTimeout) * time.Second)
 	options.SetConnectRetryInterval(time.Duration(c.broker.ConnectRetryDelay) * time.Second)
-
-	// // Test Subscribe
-	// options.OnConnect = func(mc mqtt.Client) {
-	// 	if token := mc.Subscribe("serverroom/#", byte(0), c.onMessageReceived); token.Wait() && token.Error() != nil {
-	// 		c.logEntry.Error(token.Error())
-	// 	}
-	// }
 
 	// Connecting to Broker
 	fmt.Printf("Connecting to %s\n", c.broker.BrokerAddress)
@@ -236,40 +161,12 @@ func (c *Client) run(client mqtt.Client) {
 				c.logEntry.Error(err)
 				continue
 			}
-			// if token := client.Subscribe(subscription.Topic, byte(subscription.QOS), c.onMessageReceived); token.Wait() && token.Error() != nil {
-			// 	c.logEntry.Error(token.Error())
-			// }
 
 			if token := client.Subscribe(subscription.Topic, byte(subscription.QOS), func(client mqtt.Client, message mqtt.Message) {
 				go func(message mqtt.Message) {
-					// res := responseMessage{
-					// 	TimeStamp: time.Now().Local().Unix(),
-					// 	Topic:     message.Topic(),
-					// 	Payload:   message.Payload(),
-					// }
-
-					// resJSON, err := json.Marshal(res.Payload)
-					// payload := string(message.Payload())
-					// fmt.Println(payload)
-					// if err != nil {
-					// 	c.logEntry.Error(err)
-					// }
-					// fmt.Printf("Timestamp: %d, %s\n", time.Now().Unix(), resJSON)
-
 					c.logEntry.Info(message)
 					c.emit(subscription.SubscriptionID.String(), message.Payload())
 				}(message)
-
-				// res := responseMessage{
-				// 	TimeStamp: time.Now().Local().Unix(),
-				// 	Topic:     message.Topic(),
-				// 	Payload:   string(message.Payload()),
-				// }
-				// resJSON, err := json.Marshal(res)
-				// if err != nil {
-				// 	c.logEntry.Error(err)
-				// }
-				// c.emit(subscription.SubscriptionID.String(), message)
 			}); token.Wait() && token.Error() != nil {
 				c.logEntry.Error(token.Error())
 			}
