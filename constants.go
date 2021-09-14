@@ -1,4 +1,4 @@
-package mqttclient
+package mqttmon
 
 const (
 	// BrokerEvent Event

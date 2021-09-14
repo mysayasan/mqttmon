@@ -1,4 +1,4 @@
-package mqttclient
+package mqttmon
 
 import (
 	"crypto/tls"
@@ -158,10 +158,10 @@ func (c *Client) Connect() {
 	}
 
 	options := mqtt.NewClientOptions().AddBroker(c.broker.BrokerAddress).SetClientID(clientid).SetCleanSession(true)
-	if c.broker.ClientUsername != "" && c.broker.ClientID != "nil" {
-		options.SetUsername(c.broker.ClientUsername)
-		if c.broker.ClientPassword != "" && c.broker.ClientPassword != "nil" {
-			options.SetPassword(c.broker.ClientPassword)
+	if c.broker.Username != "" && c.broker.ClientID != "nil" {
+		options.SetUsername(c.broker.Username)
+		if c.broker.Userpass != "" && c.broker.Userpass != "nil" {
+			options.SetPassword(c.broker.Userpass)
 		}
 	}
 

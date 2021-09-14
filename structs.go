@@ -1,4 +1,4 @@
-package mqttclient
+package mqttmon
 
 import (
 	"time"
@@ -12,8 +12,8 @@ type Broker struct {
 	BrokerDescription    string    `json:"brokerdescription" form:"brokerdescription" query:"brokerdescription"`
 	BrokerAddress        string    `json:"brokeraddress" form:"brokeraddress" query:"brokeraddress" validate:"required"`
 	ClientID             string    `json:"clientid" form:"clientid" query:"clientid"`
-	ClientUsername       string    `json:"clientusername" form:"clientusername" query:"clientusername"`
-	ClientPassword       string    `json:"clientpassword" form:"clientpassword" query:"clientpassword"`
+	Username             string    `json:"username" form:"username" query:"username"`
+	Userpass             string    `json:"userpass" form:"userpass" query:"userpass"`
 	PingTimeout          int       `json:"pingtimeout" form:"pingtimeout" query:"pingtimeout"`
 	KeepAlive            int       `json:"keepalive" form:"keepalive" query:"keepalive"`
 	AutoReconnect        int       `json:"autoreconnect" form:"autoreconnect" query:"autoreconnect"`

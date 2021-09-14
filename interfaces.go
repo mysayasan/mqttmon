@@ -1,4 +1,4 @@
-package mqttclient
+package mqttmon
 
 // IInstance represent MQTT application
 type IInstance interface {
