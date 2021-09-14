@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	hostUtils "github.com/mysayasan/helpers-go/host"
+	hosthelper "github.com/mysayasan/hosthelper"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/sirupsen/logrus"
@@ -27,7 +27,7 @@ type instance struct {
 func NewInstance(hub *Hub, brokers []*Broker, timeout time.Duration, logger *logrus.Logger) IInstance {
 
 	hostName, _ := os.Hostname()
-	hostAddress, _ := hostUtils.ExternalIP()
+	hostAddress, _ := hosthelper.ExternalIP()
 
 	// Prepare logger
 	logEntry := logger.WithFields(logrus.Fields{
