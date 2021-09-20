@@ -102,7 +102,7 @@ func (c *Client) Connect() {
 	options.SetAutoReconnect(c.broker.AutoReconnect == 1)
 	options.SetKeepAlive(time.Duration(c.broker.KeepAlive) * time.Second)
 	options.SetPingTimeout(time.Duration(c.broker.PingTimeout) * time.Second)
-	options.SetConnectRetryInterval(time.Duration(c.broker.ConnectRetryDelay) * time.Second)
+	options.SetConnectRetryInterval(time.Duration(c.broker.ConnRetryDelay) * time.Second)
 
 	// Connecting to Broker
 	fmt.Printf("Connecting to %s\n", c.broker.BrokerAddress)
