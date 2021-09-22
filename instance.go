@@ -71,7 +71,7 @@ func (a *instance) Connect() error {
 	return nil
 }
 
-func (a *instance) MultiSubscribe(subscriptions []*Subscription) (chan []byte, error) {
+func (a *instance) MultiSubscribe(brokerid int, subscriptions []*Subscription) (chan []byte, error) {
 	if len(a.brokers) < 1 {
 		return nil, errors.New("no broker found")
 	}
@@ -83,7 +83,7 @@ func (a *instance) MultiSubscribe(subscriptions []*Subscription) (chan []byte, e
 	response := make(chan []byte)
 
 	for _, subscription := range subscriptions {
-		a.Subscribe(subscription, response)
+		a.Subscribe(brokerid, subscription, response)
 	}
 
 	return response, nil
@@ -93,7 +93,7 @@ func (a *instance) MultiSubscribe(subscriptions []*Subscription) (chan []byte, e
 // 	go a.runPublisher(brokerid, publishChan)
 // }
 
-func (a *instance) StreamPublish(publishChan chan []byte) {
+func (a *instance) PublishChannel(brokerid int, publishChan chan []byte) {
 	for {
 		select {
 		case data := <-publishChan:
@@ -104,14 +104,14 @@ func (a *instance) StreamPublish(publishChan chan []byte) {
 				continue
 			}
 			// fmt.Printf("%v", publish)
-			a.Publish(publication)
+			a.Publish(brokerid, publication)
 		default:
 			continue
 		}
 	}
 }
 
-func (a *instance) Publish(publication Publication) {
+func (a *instance) Publish(brokerid int, publication Publication) {
 	publishJSON, err := json.Marshal(publication)
 	if err != nil {
 		a.logEntry.Error(err)
@@ -122,13 +122,13 @@ func (a *instance) Publish(publication Publication) {
 		// if client.broker.BrokerID == publication.BrokerID {
 		// 	client.Publish <- publishJSON
 		// }
-		if client.broker.BrokerID == publication.BrokerID {
+		if client.broker.BrokerID == brokerid {
 			client.Publish <- publishJSON
 		}
 	}
 }
 
-func (a *instance) Subscribe(subscription *Subscription, response chan []byte) {
+func (a *instance) Subscribe(brokerid int, subscription *Subscription, response chan []byte) {
 	subscriptionJSON, err := json.Marshal(subscription)
 	if err != nil {
 		a.logEntry.Error(err)
@@ -140,7 +140,7 @@ func (a *instance) Subscribe(subscription *Subscription, response chan []byte) {
 		// 	client.AddListener(strconv.FormatInt(subscription.SubID, 10), response)
 		// 	client.Subscribe <- subscriptionJSON
 		// }
-		if client.broker.BrokerID == subscription.BrokerID {
+		if client.broker.BrokerID == brokerid {
 			client.AddListener(strconv.FormatInt(subscription.SubID, 10), response)
 			client.Subscribe <- subscriptionJSON
 		}
