@@ -16,7 +16,8 @@ type Broker struct {
 
 // Publication Model
 type Publication struct {
-	PubID    int64       `json:"pubid" form:"pubid" query:"pubid"`
+	PubID    int64       `json:"pubid" form:"pubid" query:"pubid" validate:"required"`
+	BrokerID int         `json:"brokerid" form:"brokerid" query:"brokerid" validate:"required"`
 	PubDesc  string      `json:"pubdesc" form:"pubdesc" query:"pubdesc" validate:"required"`
 	Topic    string      `json:"topic" form:"topic" query:"topic"`
 	QOS      int16       `json:"qos" form:"qos" query:"qos"`
@@ -26,8 +27,9 @@ type Publication struct {
 
 // Subscription Model
 type Subscription struct {
-	SubID   int64  `json:"subid" form:"subid" query:"subid"`
-	SubDesc string `json:"subdesc" form:"subdesc" query:"subdesc" validate:"required"`
-	Topic   string `json:"topic" form:"topic" query:"topic"`
-	QOS     int16  `json:"qos" form:"qos" query:"qos"`
+	SubID    int64  `json:"subid" form:"subid" query:"subid" validate:"required"`
+	BrokerID int    `json:"brokerid" form:"brokerid" query:"brokerid" validate:"required"`
+	SubDesc  string `json:"subdesc" form:"subdesc" query:"subdesc" validate:"required"`
+	Topic    string `json:"topic" form:"topic" query:"topic"`
+	QOS      int16  `json:"qos" form:"qos" query:"qos"`
 }

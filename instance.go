@@ -71,7 +71,7 @@ func (a *instance) Connect() error {
 	return nil
 }
 
-func (a *instance) RunSubscription(brokerid int, subscriptions []*Subscription) (chan []byte, error) {
+func (a *instance) MultiSubscribe(subscriptions []*Subscription) (chan []byte, error) {
 	if len(a.brokers) < 1 {
 		return nil, errors.New("no broker found")
 	}
@@ -83,7 +83,7 @@ func (a *instance) RunSubscription(brokerid int, subscriptions []*Subscription) 
 	response := make(chan []byte)
 
 	for _, subscription := range subscriptions {
-		a.Subscribe(brokerid, subscription, response)
+		a.Subscribe(subscription, response)
 	}
 
 	return response, nil
@@ -93,7 +93,7 @@ func (a *instance) RunSubscription(brokerid int, subscriptions []*Subscription) 
 // 	go a.runPublisher(brokerid, publishChan)
 // }
 
-func (a *instance) RunPublication(brokerid int, publishChan chan []byte) {
+func (a *instance) StreamPublish(publishChan chan []byte) {
 	for {
 		select {
 		case data := <-publishChan:
@@ -104,14 +104,14 @@ func (a *instance) RunPublication(brokerid int, publishChan chan []byte) {
 				continue
 			}
 			// fmt.Printf("%v", publish)
-			a.Publish(brokerid, publication)
+			a.Publish(publication)
 		default:
 			continue
 		}
 	}
 }
 
-func (a *instance) Publish(brokerid int, publication Publication) {
+func (a *instance) Publish(publication Publication) {
 	publishJSON, err := json.Marshal(publication)
 	if err != nil {
 		a.logEntry.Error(err)
@@ -122,13 +122,13 @@ func (a *instance) Publish(brokerid int, publication Publication) {
 		// if client.broker.BrokerID == publication.BrokerID {
 		// 	client.Publish <- publishJSON
 		// }
-		if client.broker.BrokerID == brokerid {
+		if client.broker.BrokerID == publication.BrokerID {
 			client.Publish <- publishJSON
 		}
 	}
 }
 
-func (a *instance) Subscribe(brokerid int, subscription *Subscription, response chan []byte) {
+func (a *instance) Subscribe(subscription *Subscription, response chan []byte) {
 	subscriptionJSON, err := json.Marshal(subscription)
 	if err != nil {
 		a.logEntry.Error(err)
@@ -140,7 +140,7 @@ func (a *instance) Subscribe(brokerid int, subscription *Subscription, response 
 		// 	client.AddListener(strconv.FormatInt(subscription.SubID, 10), response)
 		// 	client.Subscribe <- subscriptionJSON
 		// }
-		if client.broker.BrokerID == brokerid {
+		if client.broker.BrokerID == subscription.BrokerID {
 			client.AddListener(strconv.FormatInt(subscription.SubID, 10), response)
 			client.Subscribe <- subscriptionJSON
 		}
