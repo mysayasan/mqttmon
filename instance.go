@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log"
 	"os"
-	"strconv"
 	"time"
 
 	hosthelper "github.com/mysayasan/hosthelper"
@@ -141,7 +140,8 @@ func (a *instance) Subscribe(brokerid int, subscription *Subscription, response 
 		// 	client.Subscribe <- subscriptionJSON
 		// }
 		if client.broker.BrokerID == brokerid {
-			client.AddListener(strconv.FormatInt(subscription.SubID, 10), response)
+			// client.AddListener(strconv.FormatInt(subscription.SubID, 10), response)
+			client.AddListener(subscription.SubID, response)
 			client.Subscribe <- subscriptionJSON
 		}
 	}
