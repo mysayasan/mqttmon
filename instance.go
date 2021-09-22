@@ -71,7 +71,7 @@ func (a *instance) Connect() error {
 	return nil
 }
 
-func (a *instance) RunSubscribe(brokerid int, subscriptions []*Subscription) (chan []byte, error) {
+func (a *instance) RunSubscription(brokerid int, subscriptions []*Subscription) (chan []byte, error) {
 	if len(a.brokers) < 1 {
 		return nil, errors.New("no broker found")
 	}
@@ -89,11 +89,11 @@ func (a *instance) RunSubscribe(brokerid int, subscriptions []*Subscription) (ch
 	return response, nil
 }
 
-func (a *instance) RunPublisher(brokerid int, publishChan chan []byte) {
-	go a.runPublisher(brokerid, publishChan)
-}
+// func (a *instance) RunPublication(brokerid int, publishChan chan []byte) {
+// 	go a.runPublisher(brokerid, publishChan)
+// }
 
-func (a *instance) runPublisher(brokerid int, publishChan chan []byte) {
+func (a *instance) RunPublication(brokerid int, publishChan chan []byte) {
 	for {
 		select {
 		case data := <-publishChan:
