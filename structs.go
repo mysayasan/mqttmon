@@ -33,10 +33,3 @@ type Subscription struct {
 	Topic    string `json:"topic" form:"topic" query:"topic"`
 	QOS      int16  `json:"qos" form:"qos" query:"qos"`
 }
-
-// Message Model
-type Message struct {
-	Topic   string `json:"topic" form:"topic" query:"topic"`
-	Payload []byte `json:"payload" form:"payload" query:"payload"`
-	QOS     int16  `json:"qos" form:"qos" query:"qos"`
-}
