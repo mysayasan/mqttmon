@@ -165,7 +165,15 @@ func (c *Client) run(client mqtt.Client) {
 			if token := client.Subscribe(subscription.Topic, byte(subscription.QOS), func(client mqtt.Client, message mqtt.Message) {
 				go func(message mqtt.Message) {
 					// c.logEntry.Info(message)
-					c.emit(subscription.SubID, message.Payload())
+					msg := &Message{
+						Topic:   message.Topic(),
+						Payload: message.Payload(),
+						QOS:     int16(message.Qos()),
+					}
+					data, _ := json.Marshal(msg)
+					if err == nil {
+						c.emit(subscription.SubID, data)
+					}
 				}(message)
 			}); token.Wait() && token.Error() != nil {
 				c.logEntry.Error(token.Error())
