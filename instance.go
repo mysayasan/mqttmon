@@ -88,11 +88,11 @@ func (a *instance) MultiSubscribe(subscriptions []*Subscription) (chan []byte, e
 	return response, nil
 }
 
-// func (a *instance) RunPublication(brokerid int, publishChan chan []byte) {
-// 	go a.runPublisher(brokerid, publishChan)
-// }
-
 func (a *instance) PublishChannel(publishChan chan []byte) {
+	go a.publishChannel(publishChan)
+}
+
+func (a *instance) publishChannel(publishChan chan []byte) {
 	for {
 		select {
 		case data := <-publishChan:
