@@ -136,12 +136,12 @@ func (a *instance) Subscribe(subscription *Subscription, response chan []byte) {
 	// Subscribe to mqtt broker
 	for client := range a.hub.Clients {
 		// if client.broker.BrokerID == subscription.BrokerID {
-		// 	client.AddListener(strconv.FormatInt(subscription.SubID, 10), response)
+		// 	client.AddListener(strconv.FormatInt(subscription.SessionID, 10), response)
 		// 	client.Subscribe <- subscriptionJSON
 		// }
 		if client.broker.BrokerID == subscription.BrokerID {
-			// client.AddListener(strconv.FormatInt(subscription.SubID, 10), response)
-			client.AddListener(subscription.SubID, response)
+			// client.AddListener(strconv.FormatInt(subscription.SessionID, 10), response)
+			client.AddListener(subscription.SessionID, response)
 			client.Subscribe <- subscriptionJSON
 		}
 	}
