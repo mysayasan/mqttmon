@@ -110,11 +110,11 @@ func (a *instance) publishChannel(publishChan chan []byte) {
 	}
 }
 
-func (a *instance) Publish(publication Publication) {
+func (a *instance) Publish(publication Publication) error {
 	publishJSON, err := json.Marshal(publication)
 	if err != nil {
-		a.logEntry.Error(err)
-		return
+		// a.logEntry.Error(err)
+		return err
 	}
 	// Publish to mqtt client
 	for client := range a.hub.Clients {
@@ -125,13 +125,15 @@ func (a *instance) Publish(publication Publication) {
 			client.Publish <- publishJSON
 		}
 	}
+
+	return nil
 }
 
-func (a *instance) Subscribe(subscription *Subscription, response chan []byte) {
+func (a *instance) Subscribe(subscription *Subscription, response chan []byte) error {
 	subscriptionJSON, err := json.Marshal(subscription)
 	if err != nil {
 		a.logEntry.Error(err)
-		return
+		return err
 	}
 	// Subscribe to mqtt broker
 	for client := range a.hub.Clients {
@@ -145,4 +147,23 @@ func (a *instance) Subscribe(subscription *Subscription, response chan []byte) {
 			client.Subscribe <- subscriptionJSON
 		}
 	}
+
+	return nil
+}
+
+func (a *instance) Unsubscribe(subscription *Subscription) error {
+	subscriptionJSON, err := json.Marshal(subscription)
+	if err != nil {
+		// a.logEntry.Error(err)
+		return err
+	}
+	// Subscribe to mqtt broker
+	for client := range a.hub.Clients {
+		if client.broker.BrokerID == subscription.BrokerID {
+			client.Unsubscribe <- subscriptionJSON
+			client.RemoveListener(subscription.SessionID)
+		}
+	}
+
+	return nil
 }

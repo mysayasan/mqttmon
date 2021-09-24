@@ -27,11 +27,15 @@ type Client struct {
 	// Subscribe to broker
 	Subscribe chan []byte
 
+	// Unsubscribe to broker
+	Unsubscribe chan []byte
+
 	// Close channel
 	Close chan bool
 
 	// listener
-	listeners map[string][]chan []byte
+	// listeners map[string][]chan []byte
+	listeners map[string]chan []byte
 }
 
 // NewClient create new client
@@ -40,42 +44,60 @@ func NewClient(
 	logEntry *logrus.Entry,
 ) *Client {
 	return &Client{
-		broker:    broker,
-		logEntry:  logEntry,
-		Publish:   make(chan []byte),
-		Subscribe: make(chan []byte),
-		Close:     make(chan bool),
+		broker:      broker,
+		logEntry:    logEntry,
+		Publish:     make(chan []byte),
+		Subscribe:   make(chan []byte),
+		Unsubscribe: make(chan []byte),
+		Close:       make(chan bool),
 	}
 }
 
 // AddListener add event listener
+// func (c *Client) AddListener(e string, ch chan []byte) {
+// 	if c.listeners == nil {
+// 		c.listeners = make(map[string][]chan []byte)
+// 	}
+// 	c.listeners[e] = append(c.listeners[e], ch)
+// }
 func (c *Client) AddListener(e string, ch chan []byte) {
 	if c.listeners == nil {
-		c.listeners = make(map[string][]chan []byte)
+		c.listeners = make(map[string]chan []byte)
 	}
-	c.listeners[e] = append(c.listeners[e], ch)
+	c.listeners[e] = ch
 }
 
 // RemoveListener removes an event listener
-func (c *Client) RemoveListener(e string, ch chan []byte) {
-	if _, ok := c.listeners[e]; ok {
-		for i := range c.listeners[e] {
-			if c.listeners[e][i] == ch {
-				c.listeners[e] = append(c.listeners[e][:i], c.listeners[e][i+1:]...)
-				break
-			}
-		}
-	}
+// func (c *Client) RemoveListener(e string, ch chan []byte) {
+// 	if _, ok := c.listeners[e]; ok {
+// 		for i := range c.listeners[e] {
+// 			if c.listeners[e][i] == ch {
+// 				c.listeners[e] = append(c.listeners[e][:i], c.listeners[e][i+1:]...)
+// 				break
+// 			}
+// 		}
+// 	}
+// }
+func (c *Client) RemoveListener(e string) {
+	delete(c.listeners, e)
 }
 
 // Emit emits an event on the Dog struct instance
+// func (c *Client) emit(e string, response []byte) {
+// 	if _, ok := c.listeners[e]; ok {
+// 		for _, handler := range c.listeners[e] {
+// 			go func(handler chan []byte) {
+// 				handler <- response
+// 			}(handler)
+// 		}
+// 	}
+// }
+
 func (c *Client) emit(e string, response []byte) {
-	if _, ok := c.listeners[e]; ok {
-		for _, handler := range c.listeners[e] {
-			go func(handler chan []byte) {
-				handler <- response
-			}(handler)
-		}
+	if listener, ok := c.listeners[e]; ok {
+		go func(listener chan []byte) {
+			listener <- response
+		}(listener)
 	}
 }
 
@@ -169,6 +191,32 @@ func (c *Client) run(client mqtt.Client) {
 				}(message)
 			}); token.Wait() && token.Error() != nil {
 				c.logEntry.Error(token.Error())
+			}
+
+		case data, ok := <-c.Unsubscribe:
+			if !ok {
+				fmt.Printf("Channel is closed!\n")
+				return
+			}
+
+			var subscription Subscription
+
+			err := json.Unmarshal(data, &subscription)
+			if err != nil {
+				c.logEntry.Error(err)
+				continue
+			}
+
+			if token := client.Unsubscribe(subscription.Topic); token.Wait() && token.Error() != nil {
+				c.logEntry.Error(token.Error())
+				// fmt.Printf("Removing listener: %s\n", subscription.SessionID)
+				// timer1 := time.NewTimer(30 * time.Second)
+
+				// go func() {
+				// 	<-timer1.C
+				// 	c.RemoveListener(subscription.SessionID)
+				// 	fmt.Printf("Removed listener: %s\n", subscription.SessionID)
+				// }()
 			}
 		default:
 			continue
