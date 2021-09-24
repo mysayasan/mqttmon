@@ -187,6 +187,7 @@ func (c *Client) run(client mqtt.Client) {
 			if token := client.Subscribe(subscription.Topic, byte(subscription.QOS), func(client mqtt.Client, message mqtt.Message) {
 				go func(message mqtt.Message) {
 					// c.logEntry.Info(message)
+					fmt.Printf("still emit!\n")
 					c.emit(subscription.SessionID, message.Payload())
 				}(message)
 			}); token.Wait() && token.Error() != nil {

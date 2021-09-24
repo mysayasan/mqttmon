@@ -70,13 +70,13 @@ func (a *instance) Connect() error {
 	return nil
 }
 
-func (a *instance) MultiSubscribe(subscriptions []*Subscription) (chan []byte, error) {
+func (a *instance) SubscribeAll(subscriptions []*Subscription) (chan []byte, error) {
 	if len(a.brokers) < 1 {
 		return nil, errors.New("no broker found")
 	}
 
 	if len(subscriptions) < 1 {
-		return nil, errors.New("no subscriptions")
+		return nil, errors.New("empty subscriptions")
 	}
 
 	response := make(chan []byte)
@@ -86,6 +86,18 @@ func (a *instance) MultiSubscribe(subscriptions []*Subscription) (chan []byte, e
 	}
 
 	return response, nil
+}
+
+func (a *instance) UnsubscribeAll(subscriptions []*Subscription) error {
+	if len(subscriptions) < 1 {
+		return errors.New("empty subscriptions")
+	}
+
+	for _, subscription := range subscriptions {
+		a.Unsubscribe(subscription)
+	}
+
+	return nil
 }
 
 func (a *instance) PublishChannel(publishChan chan []byte) {
