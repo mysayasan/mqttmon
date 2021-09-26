@@ -2,7 +2,7 @@ package mqttmon
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -37,7 +37,7 @@ func NewInstance(hub *Hub, brokers []*Broker, timeout time.Duration, logger *log
 	})
 
 	if len(brokers) < 1 {
-		logEntry.Error(errors.New("no broker found"))
+		logEntry.Error(fmt.Errorf("no broker found"))
 	}
 
 	return &instance{
@@ -52,7 +52,7 @@ func NewInstance(hub *Hub, brokers []*Broker, timeout time.Duration, logger *log
 // Connect to MQTT Client
 func (a *instance) Connect() error {
 	if len(a.brokers) < 1 {
-		return errors.New("no broker found")
+		return fmt.Errorf("no broker found")
 	}
 	// Set error log for mqtt
 	mqtt.ERROR = log.New(a.logEntry.WriterLevel(2), "Error: ", log.LstdFlags)
@@ -72,11 +72,11 @@ func (a *instance) Connect() error {
 
 func (a *instance) SubscribeAll(subscriptions []*Subscription) (chan []byte, error) {
 	if len(a.brokers) < 1 {
-		return nil, errors.New("no broker found")
+		return nil, fmt.Errorf("no broker found")
 	}
 
 	if len(subscriptions) < 1 {
-		return nil, errors.New("empty subscriptions")
+		return nil, fmt.Errorf("empty subscriptions")
 	}
 
 	response := make(chan []byte)
@@ -90,7 +90,7 @@ func (a *instance) SubscribeAll(subscriptions []*Subscription) (chan []byte, err
 
 func (a *instance) UnsubscribeAll(subscriptions []*Subscription) error {
 	if len(subscriptions) < 1 {
-		return errors.New("empty subscriptions")
+		return fmt.Errorf("empty subscriptions")
 	}
 
 	for _, subscription := range subscriptions {
