@@ -95,6 +95,7 @@ func (c *Client) RemoveListener(e string) {
 
 func (c *Client) emit(e string, response []byte) {
 	if listener, ok := c.listeners[e]; ok {
+		fmt.Printf("Emit to : %s", e)
 		go func(listener chan []byte) {
 			listener <- response
 		}(listener)
